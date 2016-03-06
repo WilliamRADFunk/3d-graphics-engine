@@ -157,14 +157,14 @@ Engine.Cube = function(x1, y1, z1, w, h, d, c)
 {
 	var center = [(x1 + centerX), (y1 + centerY), z1];
 	// Establishing the cube's 8 nodes.
-	var node0 = [(center[0] - w/2), (center[1] + h/2), (center[2] + d/2)];
-	var node1 = [(center[0] + w/2), (center[1] + h/2), (center[2] + d/2)];
-	var node2 = [(center[0] - w/2), (center[1] - h/2), (center[2] + d/2)];
-	var node3 = [(center[0] + w/2), (center[1] - h/2), (center[2] + d/2)];
-	var node4 = [(center[0] - w/2), (center[1] + h/2), (center[2] - d/2)];
-	var node5 = [(center[0] + w/2), (center[1] + h/2), (center[2] - d/2)];
-	var node6 = [(center[0] - w/2), (center[1] - h/2), (center[2] - d/2)];
-	var node7 = [(center[0] + w/2), (center[1] - h/2), (center[2] - d/2)];
+	var node0 = [(center[0] - w/2), (center[1] + h/2), (center[2] - d/2)];
+	var node1 = [(center[0] + w/2), (center[1] + h/2), (center[2] - d/2)];
+	var node2 = [(center[0] - w/2), (center[1] - h/2), (center[2] - d/2)];
+	var node3 = [(center[0] + w/2), (center[1] - h/2), (center[2] - d/2)];
+	var node4 = [(center[0] - w/2), (center[1] + h/2), (center[2] + d/2)];
+	var node5 = [(center[0] + w/2), (center[1] + h/2), (center[2] + d/2)];
+	var node6 = [(center[0] - w/2), (center[1] - h/2), (center[2] + d/2)];
+	var node7 = [(center[0] + w/2), (center[1] - h/2), (center[2] + d/2)];
 	var nodes = [node0,node1,node2,node3,node4,node5,node6,node7];
 	// Establishing the cube's 12 edges.
 	var edges = [[0,1],[1,3],[3,2],[2,0],
@@ -180,8 +180,8 @@ Engine.Cube = function(x1, y1, z1, w, h, d, c)
 		},
 		// Original length of line along each axes
 		len: [
-				[-w/2,h/2,d/2], [w/2,h/2,d/2], [-w/2,-h/2,d/2], [w/2,-h/2,d/2],
 				[-w/2,h/2,-d/2], [w/2,h/2,-d/2], [-w/2,-h/2,-d/2], [w/2,-h/2,-d/2],
+				[-w/2,h/2,d/2], [w/2,h/2,d/2], [-w/2,-h/2,d/2], [w/2,-h/2,d/2],
 			],
 		// The amount of change to the axis angle each update.
 		rotation:

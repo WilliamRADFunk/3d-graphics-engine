@@ -25,7 +25,7 @@ function init()
 	//line2.setRotation(0.1,0,0);
 	//line3.setRotation(0,0.1,0);
 	cube = (new Engine.Cube(25, 25, 100, 50, 50, 50, new Engine.Color(255, 0, 0)));
-	cube.setRotation(0.1,0,0);
+	cube.setRotation(0.1,0.1,0.1);
 	scene = new Engine.Scene();
 	//scene.add(line);
 	//scene.add(line2);
