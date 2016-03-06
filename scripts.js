@@ -1,4 +1,4 @@
-var FPS = 1;
+var FPS = 60;
 var context;
 var centerX;
 var centerY;
@@ -24,8 +24,8 @@ function init()
 	//line.setRotation(0,0,0.1);
 	//line2.setRotation(0.1,0,0);
 	//line3.setRotation(0,0.1,0);
-	cube = (new Engine.Cube(0, 0, 0, 50, 50, 50, new Engine.Color(255, 0, 0)));
-	cube.setRotation(0,0,0.1);
+	cube = (new Engine.Cube(25, 25, 100, 50, 50, 50, new Engine.Color(255, 0, 0)));
+	cube.setRotation(0.1,0,0);
 	scene = new Engine.Scene();
 	//scene.add(line);
 	//scene.add(line2);
