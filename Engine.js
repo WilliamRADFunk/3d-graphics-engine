@@ -155,7 +155,7 @@ Engine.Line = function(x1, y1, z1, x2, y2, z2, c)
 };
 Engine.Cube = function(x1, y1, z1, w, h, d, c)
 {
-	var center = [(x1 + centerX), (y1 + centerY), z1];
+	var center = [0, 0, 0];
 	// Establishing the cube's 8 nodes.
 	var node0 = [(center[0] - w/2), (center[1] + h/2), (center[2] - d/2)];
 	var node1 = [(center[0] + w/2), (center[1] + h/2), (center[2] - d/2)];
@@ -178,11 +178,6 @@ Engine.Cube = function(x1, y1, z1, w, h, d, c)
 			y: center[1],
 			z: center[2]
 		},
-		// Original length of line along each axes
-		len: [
-				[-w/2,h/2,-d/2], [w/2,h/2,-d/2], [-w/2,-h/2,-d/2], [w/2,-h/2,-d/2],
-				[-w/2,h/2,d/2], [w/2,h/2,d/2], [-w/2,-h/2,d/2], [w/2,-h/2,d/2],
-			],
 		// The amount of change to the axis angle each update.
 		rotation:
 		{
@@ -208,49 +203,61 @@ Engine.Cube = function(x1, y1, z1, w, h, d, c)
 		color: c,
 		render: function()
 		{
-			// Applies the rotation and translation scalars.
-			this.angle.x += this.rotation.x;
-			if(this.angle.x >= 360) this.angle.x = 0;
-			this.angle.y += this.rotation.y;
-			if(this.angle.y >= 360) this.angle.y = 0;
-			this.angle.z += this.rotation.z;
-			if(this.angle.z >= 360) this.angle.z = 0;
-			// Converts from degrees to radians.
-			var alpha = this.angle.z * (Math.PI/180);
-			var beta = this.angle.y * (Math.PI/180);
-			var gamma = this.angle.x * (Math.PI/180);
+			var alpha = this.rotation.z * (Math.PI/180);
+			var beta = this.rotation.y * (Math.PI/180);
+			var gamma = this.rotation.x * (Math.PI/180);
+
+			/*  Math taken from Wolfram Alpha
+			**
+			**	[	a11		a12		a13		Tx	] [x]
+			**	[	a21		a22		a23		Ty	] [y]	=	A
+			**	[	a31		a32		a33		Tz	] [z]
+			**	[	0		0		0		1	] [1]
+			**
+			**	a11 = cos(gamma) cos(alpha) - cos(beta) sin(alpha) sin(gamma)
+			**	a12 = cos(gamma) sin(alpha) + cos(beta) cos(alpha) sin(gamma)
+			**	a13 = sin(gamma) sin(beta)
+			**	a21 = -sin(gamma) cos(alpha) - cos(beta) sin(alpha) cos(gamma)
+			**	a22 = -sin(gamma) sin(alpha) + cos(beta) cos(alpha) cos(gamma)
+			**	a23 = cos(gamma) sin(beta)
+			**	a31 = sin(beta) sin(alpha)
+			**	a32 = -sin(beta) cos(alpha)
+			**	a33 = cos(beta)
+			*/
+
+			// Simplifying Trig into smaller variables
+			var cosB = Math.cos(beta);
+			var sinB = Math.sin(beta);
+			var cosA = Math.cos(alpha);
+			var sinA = Math.sin(alpha);
+			var cosG = Math.cos(gamma);
+			var sinG = Math.sin(gamma);
+			
+			// Solving individual points in Euler Rotation Matrix
+			var a11 = (cosG * cosA) - (cosB * sinA * sinG);
+			var a12 = (cosG * sinA) + (cosB * cosA * sinG);
+			var a13 = (sinG * sinB);
+			var a21 = (-sinG * cosA) - (cosB * sinA * cosG);
+			var a22 = (-sinG * sinA) + (cosB * cosA * cosG);
+			var a23 = (cosG * sinB);
+			var a31 = (sinB * sinA);
+			var a32 = (-sinB * cosA);
+			var a33 = cosB;
+
 			for(var i = 0; i < nodes.length; i++)
 			{
-				nodes[i][0] += this.translation.x;
-				nodes[i][1] += this.translation.y;
-				nodes[i][2] += this.translation.z;
-				// Rotates end node around z-axis.
-				if(alpha !== 0)
-				{
-					var cosA = Math.cos(alpha);
-					var sinA = Math.sin(alpha);
-					nodes[i][0] = (cosA * this.len[i][0]) - (sinA * this.len[i][1]) + this.position.x;
-					nodes[i][1] = (cosA * this.len[i][1]) + (sinA * this.len[i][0]) + this.position.y;
-				}
-				// Rotates end node around y-axis.
-				if(beta !== 0)
-				{
-					var cosB = Math.cos(beta);
-					var sinB = Math.sin(beta);
-					nodes[i][0] = (cosB * this.len[i][0]) - (sinB * this.len[i][2]) + this.position.x;
-					nodes[i][2] = (cosB * this.len[i][2]) + (sinB * this.len[i][0]) + this.position.z;
-				}
-				// Rotates end node around x-axis.
-				if(gamma !== 0)
-				{
-					var cosG = Math.cos(gamma);
-					var sinG = Math.sin(gamma);
-					nodes[i][1] = (cosG * this.len[i][1]) - (sinG * this.len[i][2]) + this.position.y;
-					nodes[i][2] = (cosG * this.len[i][2]) + (sinG * this.len[i][1]) + this.position.z;
-				}
+				// Euler Rotation Matrix to calculate new x, y, and z
+				var xNew = (a11 * nodes[i][0]) + (a12 * nodes[i][1]) + (a13 * nodes[i][2]) + this.translation.x;
+				var yNew = (a21 * nodes[i][0]) + (a22 * nodes[i][1]) + (a23 * nodes[i][2]) + this.translation.y;
+				var zNew = (a31 * nodes[i][0]) + (a32 * nodes[i][1]) + (a33 * nodes[i][2]) + this.translation.z;
+
+				// Put new x, y, and z points into the node
+				nodes[i][0] = xNew;
+				nodes[i][1] = yNew;
+				nodes[i][2] = zNew;
 			}
 			// Draws the center node of the cube.
-			var node = new Engine.Node(this.position.x, this.position.y, this.position.z, 10, new Engine.Color(32, 32, 32));
+			var node = new Engine.Node(this.position.x + centerX, this.position.y + centerY, this.position.z, 10, new Engine.Color(32, 32, 32));
 			node.render();
 			// Draws the new line.
 			for(var j = 0; j < edges.length; j++)
@@ -260,8 +267,8 @@ Engine.Cube = function(x1, y1, z1, w, h, d, c)
 				var node0 = nodes[n0];
 				var node1 = nodes[n1];
 				context.beginPath();
-				context.moveTo(node0[0], node0[1]);
-				context.lineTo(node1[0], node1[1]);
+				context.moveTo(node0[0] + centerX, node0[1] + centerY);
+				context.lineTo(node1[0] + centerX, node1[1] + centerY);
 				context.strokeStyle = this.color.value;
 				context.stroke();
 			}
