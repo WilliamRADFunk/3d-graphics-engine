@@ -8,7 +8,7 @@ var line2;
 var line3;
 var scene;
 var cube;
-var block;
+var cube2;
 var cameraZoom = 20;
 
 // Canvas setup and Engine instigation.
@@ -39,6 +39,10 @@ function init()
 	cube.setRotation(1,1,1);
 	scene = new Engine.Scene();
 	scene.add(cube);
+
+	cube2 = (new Engine.Cube(25, 25, 50, 10, 10, 10, new Engine.Color(0, 255, 0)));
+	cube2.setRotation(-1,-1,-1);
+	scene.add(cube2);
 	
 
 	// Instigate the rendering loop.
